@@ -55,52 +55,34 @@ def get_favorites():
     }
     return jsonify(response_body), 200
 
-@app.route('/favorite/people/<int:people_id>', methods=['POST', 'DELETE'])
-def add_or_remove_people_to_favorites(user_id, people_id): #Modifique
-    user = User.query.get_or_404(user_id)
-    if request.method == 'DELETE': 
-          persona_eliminada = user.people_favorite(people_id)
-          db.session.delete(persona_eliminada)
-          db.session.comit()
-          return jsonify({"message": "Persona eliminada de favoritos"})
-    else:
-        nuevo_Favorito = user(people_id=people_id)
-        db.session.add(nuevo_Favorito)
-        db.session.commit()
-        return jsonify({"message": "Persona añadida a favoritos"})
+@app.route('/favorites/<int:people_id>', methods=['DELETE'])
+def delete_favorite(id): 
+    favorite = Favorites.query.get_or_404(id)
+    db.session.delete(id)
+    db.session.commit()
+
+@app.route('/favorites', methods=['POST'])
+def add_favorite():
+    favorite = request.get_json()
+    new_favorite = Favorites(user_id=favorite['user_id'], planets_id=favorite['planets_id'], people_id=favorite['people_id'] )
+    db.session.add()
+    db.session.commit()
+    return jsonify({"message": "Persona añadida a favoritos"})
 
 @app.route('/planets', methods=['GET'])
 def get_planets(): #Correcion
-    response_body = {
-        "id": Planets.id,
-        "name": Planets.name,
-        "rotation_period": Planets.rotation_period,
-        "orbital_period": Planets.orbital_period,
-        "diameter": Planets.diameter,
-        "climate": Planets.climate,
-        "gravity": Planets.gravity,
-        "terrain": Planets.terrain,
-        "surface_water": Planets.surface_water,
-        "population": Planets.population,
-        "message": "Desde planets"
-    }
+    planeta = Planets.query.all()
+    if planeta == []:
+        return jsonify({"msg": "No existe el planeta"})
+    response_body = list(map(lambda planeta: planeta.serialize(), planeta))
     return jsonify(response_body), 200
 
 @app.route('/people', methods=['GET'])
 def get_people():
-    response_body = {
-        "id": People.id,
-        "name": People.name,
-        "height": People.height, 
-        "mass": People.mass, 
-        "hair_color": People.hair_color, 
-        "skin_color": People.skin_color, 
-        "eye_color": People.eye_color, 
-        "birth_color": People.birth_year, 
-        "gender": People.gender,
-        "homeworld": People.homeworld, 
-        "message": "Desde People"
-    }
+    people = People.query.all()
+    if people == []:
+        return jsonify({"msg": "No existe la persona"})
+    response_body = list(map(lambda people: people.serialize(), people))
     return jsonify(response_body), 200
 
 # this only runs if `$ python src/app.py` is executed
