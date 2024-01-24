@@ -44,7 +44,7 @@ class People(db.Model):
             "hair_color": self.hair_color, 
             "skin_color": self.skin_color, 
             "eye_color": self.eye_color, 
-            "birth_color": self.birth_year, 
+            "birth_year": self.birth_year, 
             "gender": self.gender,
             "homeworld": self.homeworld, 
         }

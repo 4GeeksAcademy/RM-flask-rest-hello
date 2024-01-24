@@ -37,12 +37,14 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
-@app.route('/user', methods=['GET', 'POST'])
+@app.route('/users', methods=['GET', 'POST'])
 def get_add_users():
     if request.method == 'POST':
         user = json.loads(request.data)
         new_user = User(
-            name=user['name'],
+            email=user['email'],
+            password=user['password'],
+            is_active=user['is_active']
         )
         db.session.add(new_user)
         db.session.commit()
@@ -61,11 +63,15 @@ def get_edit_delete_user(user_id):
     if request.method == 'DELETE':
         db.session.delete(user)
         db.session.commit()
-        return jsonify({"msg": "Usuario eliminada"}), 200
+        return jsonify({"msg": "Usuario eliminad0"}), 200
     if request.method == 'PUT':
         body = json.loads(request.data)
         if "email" in body:
             user.email = body['email']
+        if "password" in body:
+            user.password = body['password']
+        if "is_active" in body:
+            user.is_active = body['is_active']
         db.session.commit()
         return jsonify(user.serialize()), 200
     return jsonify(user.serialize()), 200
@@ -74,7 +80,7 @@ def get_edit_delete_user(user_id):
 def get_add_favorites():
     if request.method == 'POST':
         favorito = json.loads(request.data)
-        new_favorite = Planets(
+        new_favorite = Favorites(
             user_id=favorito['user_id'],
             planets_id=favorito['planets_id'],
             people_id=favorito['people_id']
@@ -99,8 +105,12 @@ def get_delete_edit_favorites(favorites_id):
         return jsonify({"msg": "Favorito eliminada"}), 200
     if request.method == 'PUT':
         body = json.loads(request.data)
-        if "name" in body:
-            favorite.name = body['name']
+        if "user_id" in body:
+            favorite.user_id = body['user_id']
+        if "planets_id" in body:
+            favorite.planets_id = body['planets_id']
+        if "people_id" in body:
+            favorite.people_id = body['people_id']
         db.session.commit()
         return jsonify(favorite.serialize()), 200
     return jsonify(favorite.serialize()), 200
@@ -111,6 +121,14 @@ def get_add_planets():
         planeta = json.loads(request.data)
         new_planet = Planets(
             name=planeta['name'],
+            rotation_period=planeta['rotation_period'], 
+            orbital_period=planeta['orbital_period'],
+            diameter=planeta['diameter'],
+            climate=planeta['climate'],
+            gravity=planeta['gravity'], 
+            terrain=planeta['terrain'], 
+            surface_water=planeta['surface_water'], 
+            population=planeta['population']
         )
         db.session.add(new_planet)
         db.session.commit()
@@ -129,11 +147,27 @@ def get_delete_edit_planet(planets_id):
     if request.method == 'DELETE':
         db.session.delete(planet)
         db.session.commit()
-        return jsonify({"msg": "Persona eliminada"}), 200
+        return jsonify({"msg": "Planeta eliminada"}), 200
     if request.method == 'PUT':
         body = json.loads(request.data)
         if "name" in body:
             planet.name = body['name']
+        if "rotation_period" in body:
+            planet.rotation_period = body['rotation_period']
+        if "orbital_period" in body:
+            planet.orbital_period = body['orbital_period']
+        if "diameter" in body:
+            planet.diameter = body['diameter']
+        if "climate" in body:
+            planet.climate = body['climate']
+        if "gravity" in body:
+            planet.gravity = body['gravity']
+        if "terrain" in body:
+            planet.terrain = body['terrain']
+        if "surface_water" in body:
+            planet.surface_water = body['surface_water']
+        if "population" in body:
+            planet.population = body['population']
         db.session.commit()
         return jsonify(planet.serialize()), 200
     return jsonify(planet.serialize()), 200
@@ -144,6 +178,14 @@ def get_add_people():
         persona = json.loads(request.data)
         new_person = People(
             name=persona['name'],
+            height=persona['height'], 
+            mass=persona['mass'],
+            hair_color=persona['hair_color'], 
+            skin_color=persona['skin_color'], 
+            eye_color=persona['eye_color'], 
+            birth_year=persona['birth_year'], 
+            gender=persona['gender'],
+            homeworld=persona['homeworld']
         )
         db.session.add(new_person)
         db.session.commit()
@@ -165,8 +207,24 @@ def get_delete_edit_person(people_id):
         return jsonify({"msg": "Persona eliminada"}), 200
     if request.method == 'PUT':
         body = json.loads(request.data)
-    if "name" in body:
-        person.name = body['name']
+        if "name" in body:
+            person.name = body['name']
+        if "height" in body:
+            person.height = body['height']
+        if "mass" in body:
+            person.mass = body['mass']
+        if "hair_color" in body:
+            person.hair_color = body['hair_color']
+        if "skin_color" in body:
+            person.skin_color = body['skin_color']
+        if "eye_color" in body:
+            person.eye_color = body['eye_color']
+        if "birth_year" in body:
+            person.birth_year = body['birth_year']
+        if "gender" in body:
+            person.gender = body['gender']
+        if "homeworld" in body:
+            person.homeworld = body['homeworld']    
         db.session.commit()
         return jsonify(person.serialize()), 200
     return jsonify(person.serialize()), 200
